@@ -32,8 +32,8 @@ export class QuizzComponent implements OnInit {
    }
   }
   playerChoose(value: string): void {
-    this.answers.push(value)
-    console.log(this.answers)
+    this.answers.push(value);
+    this.nextStep();
   }
 
   async nextStep():Promise<any>{
@@ -42,7 +42,21 @@ export class QuizzComponent implements OnInit {
     if(this.questionMaxIndex > this.questionIndex){
       this.questionSelected = this.questions[this.questionIndex];
     }else{
+      const finalAnswer: string = await this.checkResult(this.answers)
       this.finished = true;
+      this.answersSelected = quizz_questions.results[finalAnswer as keyof typeof quizz_questions.results];
     }
+  }
+
+  async checkResult(answers: string[]): Promise<any>{
+    const result = answers.reduce((previos, current, i, array)=>{
+        if(array.filter(item =>item === previos).length > array.filter(item =>item === current).length){
+          return previos;
+        }else{
+          return current;
+        }
+    });
+
+    return result;
   }
 }
